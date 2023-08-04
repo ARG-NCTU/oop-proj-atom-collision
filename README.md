@@ -1,5 +1,7 @@
 # oop-proj-atom-collision 
 
+<img src="./oop_project_demo.gif"/>
+
 # For Ubuntu only
 OOP class example game
 ## How to clone
