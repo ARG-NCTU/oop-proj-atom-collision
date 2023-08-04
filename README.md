@@ -1,4 +1,4 @@
-# oop-proj-atom-collision 
+name  # oop-proj-atom-collision 
 
 <img src="./oop_project_demo.gif"/>
 
@@ -27,14 +27,21 @@ wasd to move the generator dot, and up down right left to generate your box, the
 wasd to burn the player1's thruster, up down right left to burn the player2s'.
 
 # For Windows
-Install Anaconda from folloing site.
+# Install Anaconda
+Install Anaconda from following site.
 https://docs.anaconda.com/free/anaconda/install/windows/
-
+# Download oop-proj-atom-collision
+Download oop-proj-atom-collision as a zip, and unzip.
 ### activate base env, and start the game
+You can change "oop_env" to what ever the name you like.
 ```
-$ cd ~
-$ conda activate 
+$ conda create --name oop_env python=3.8.10
+$ conda activate oop_env
 $ pip3 install pygame
+$ pip3 install numpy
+```
+cd to your oop-proj-atom-collision dir location, and run the game.
+```
 $ cd oop-proj-atom-collision
-$ python3 main.py
+$ python main.py
 ```
