@@ -36,7 +36,7 @@ docker run \
     -v "/etc/localtime:/etc/localtime:ro" \
     -v "/dev:/dev" \
     -v "/var/run/docker.sock:/var/run/docker.sock" \
-    -w "/home/arg/oop-python-nycu" \
+    -w "/home/arg/oop-proj-atom-collision" \
     --user "root:root" \
     --network host \
     --privileged \
