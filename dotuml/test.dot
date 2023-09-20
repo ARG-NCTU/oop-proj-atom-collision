@@ -1,22 +1,5 @@
 ClassDiagram{
 
-    class Actions {
-        CORE_MOVE_UP: string
-        CORE_MOVE_DOWN: string
-        CORE_MOVE_LEFT: string
-        CORE_MOVE_RIGHT: string
-    }
-
-    class Timing {
-        PLAY_BGM_TIME: int
-        START_STRONG_FORCE_TIME: int
-        ENDLESS_FORCE_TIME: int
-    }
-
-    class KeyGroups {
-        ThrusterKeys: tuple
-    }
-
     class Game {
         _players: list
         _builders: list
@@ -41,7 +24,7 @@ ClassDiagram{
         _track_length: int
         _track_colors: tuple
         _track_ratio: float
-        
+
         __init__(pygame_screen: pygame.Surface, time_between_frame: float, zero_vector: tuple, unit_size: int, background: str): void
         add_tracks(): void
         reset(): void
@@ -66,20 +49,6 @@ ClassDiagram{
         __collision_events(collision_report): void
     }
 
-    class GameState {
-        agents: list
-        x_upper_bound: int
-        x_lower_bound: int
-        y_upper_bound: int
-        y_lower_bound: int
-        __init__(): void
-        getLegalActions(agentIndex: int): list
-        getNextState(gameState: GameState, action: tuple): GameState
-        getNumAgents(): int
-        addAgents(agent): void
-        isEnd(): bool
-    }
-
     class ControllableMechansim {
         __init__(core_block: CoreBlock, momentum: tuple): void
         core_move_up(time_between_frame: float): void
@@ -90,8 +59,15 @@ ClassDiagram{
     }
 
 
+
     class CollisionDirector {
-        detect_and_effect_collision(obj1: ControllableMechansim, obj2: ControllableMechansim, time_between_frame: float): CollisionReport
+        detect_and_effect_collision(block_mechanism_1: BlockMechanism, block_mechanism_2: BlockMechanism, time_between_frame: float)
+        block_collide_data(block1: Block, block2: Block): tuple
+        is_node_in_block(node: tuple, block: Block): bool
+        _normal_vector_for_impactor(impact_line, hit_line): np.ndarray
+        _array_to_tuple(arr)
+        _detect_crossover(line1: tuple, line2: tuple): bool
+        _cal_collision_impluse(momentum1: tuple, momentum2: tuple, angular_momentum1: float, angular_momentum2: float, mass1: float, mass2: float, normal_vector: np.ndarray, e: float): np.ndarray
     }
 
     class GravityParticleEffect {
@@ -147,7 +123,6 @@ ClassDiagram{
         set_arm(arm_type: str): void
     }
 
-
     class WoodBlock {
         _max_hp: int
         _mass: int
@@ -163,14 +138,10 @@ ClassDiagram{
     }
 
     class CoreBlock {
+        _max_hp: int
+        _mass: int
+        _int_color: tuple
         __init__(center_point: tuple, visible: bool, status: int)
-        set_arm(arm: object): void
-    }
-
-    
-
-    class Arm {
-
     }
 
     class ThrusterParticleEffect {
@@ -190,7 +161,6 @@ ClassDiagram{
         render(screen, zero_vector, unit_size): void
     }
 
-
     class SkinBone {
         _previous_nodes: list
         nodes: list
@@ -209,84 +179,94 @@ ClassDiagram{
         _detect_crossover(line1: tuple, line2: tuple): bool
     }
 
-
-    class Weapon {
-        _statistic: dict
-        _available: bool
-        _credit: str
-        __init__(statistic: dict, rotation: float, credit: str): void
-        set_dir(rotation: float): void
-        get_stat(): dict
-        buff_stat(stat_to_buff: dict): void
-        change_stat(stat_to_change: dict): void
-        attack(): void
-        cool_down(): void
-        find_hit(player, area: pygame.Rect): Block
-        hit(block: Block): void
-        attack_animation(): void
-        render(screen): void
+    class Block {
+        _hp: int
+        _visible: bool
+        _block_size: float
+        _color: tuple
+        _mass: int
+        _coor: tuple
+        _rotation: float
+        _previous_coor: tuple
+        __init__(center_point: tuple, hp: int, color: tuple, mass: int, visible: bool)
+        get_hp(): int
+        set_hp(hp: int): void
+        damage_block(value: int): void
+        heal_block(value: int): void
+        get_previous_coor(): tuple
+        get_left_top(): tuple
+        get_block_size(): int
+        get_coor(): tuple
+        get_mass(): int
+        set_coor(coor: tuple): void
+        move(dir_vector: tuple): void
+        rotate(pivot_point: tuple, theta: float): void
+        render(screen, zero_vector: tuple, unit_size: int, is_debugging: bool, debug_color: tuple): void
     }
 
-    class Sword {
-        credit: str
-        __init__(statistic: dict, rotation: float): void
-        get_attack_area(pos: tuple): pygame.Rect
-        attack(opponent, pos: tuple): void
-        attack_animation(): void
+    class BlockAssembly {
+        _core: CoreBlock
+        _size: int
+        _oppo: BlockAssembly
+        _blocks: dict
+        _block_neighbor: dict
+        __init__(core_block: CoreBlock)
+        remove_block(block: DefenseBlock): void
+        is_valid(block: DefenseBlock, visited: dict): bool
+        render(screen, zero_vector: tuple, unit_size: int): void
+        add_block(block: DefenseBlock, core: bool)
+        set_oppo(player: BlockAssembly): void
+        get_blocks(): dict
+        get_block(coor: tuple): DefenseBlock
+        get_able(coor: tuple): bool
+        get_neighbors_block(block: DefenseBlock): list
+        get_neighbors(coor: tuple): list
+        add_blocks(coordinate_block: dict): void
+        build(): DefenseBlock
+        get_coor(): tuple
+        attack(arm_type): void
     }
 
-    class Hammer {
-        credit: str
-        __init__(statistic: dict, rotation: float): void
-        get_attack_area(pos: tuple): list
-        attack(opponent, pos: tuple): void
-        attack_animation(): void
+    class BlockMechanism {
+        _momentum: tuple
+        _angular_momentum: float
+        _momentum_of_inertia: float
+        _mass: float
+        _center_of_mass_coor: tuple
+        __init__(core_block: CoreBlock, momentum: tuple)
+        render(screen, zero_vector: tuple, unit_size: int, is_debugging: bool, debug_color: tuple): void
+        add_force(force: tuple, location: tuple, time_between_frame: float): void
+        get_center_of_mass_coor(): tuple
+        get_mass(): float
+        get_momentum(): tuple
+        get_angular_momentum(): float
+        move_by_physics(time_between_frame: float): void
+        move_to(coor: tuple): void
+        __update_mass(): void
+        __update_center_of_mass_coor(): void
+        __update_momentum_of_inertia(): void
+        __update_properties(): void
     }
 
-    class Cannon {
-        credit: str
-        __init__(statistic: dict, rotation: float): void
-        attack(opponent, pos: tuple): void
-        attack_animation(): void
-    }
+//==============================================================
+    Block -g-> SkinBone;
+    DefenseBlock -g-> Block;
+    WoodBlock -g-> DefenseBlock;
+    StoneBlock -g-> DefenseBlock;
+    CoreBlock -g-> DefenseBlock;
 
-    class Bullet {
-        _damage: float
-        _pos: list
-        _velocity: float
-        _dir: tuple
-        _radius: float
-        _opponent
-        _credit: str
-        __init__(damage: float, pos: tuple, velocity: float, dir: tuple, radius: float, opponent, credit: str): void
-        move(): void
-        get_attack_area(): tuple
-        intersects(rect: pygame.Rect, center: tuple, r: float): bool
-        find_hit(player, area: tuple): Block
-        hit(block: Block): void
-        explode_animation(): void
-    }
+    Block -c-> BlockAssembly;
+    BlockMechanism -g-> BlockAssembly;
+    ControllableMechansim -g-> BlockMechanism;
+    ControllableMechansimBuilder -r-> ControllableMechansim;
 
-    class Color{}
+    ControllableMechansim -r-> CollisionDirector;
+    ControllableMechansim -r-> GravityDirector;
 
-
-    Weapon --> Sword;
-    Weapon --> Hammer;
-    Weapon --> Cannon;
-
-
-
-
-    
-    GravityParticleEffect --> Color;
-    ThrusterParticleEffect --> Color;
-    ThrusterParticlesEffect --> ThrusterParticleEffect;
-    DefenseBlock -- Arm;
-    Arm --> Sword;
-    Arm --> Hammer;
-    Arm --> Cannon;
-    WoodBlock --> DefenseBlock;
-    StoneBlock --> DefenseBlock;
-    CoreBlock --> DefenseBlock;
+    CollisionDirector -a-> Game;
+    GravityDirector -a-> Game;
+    Game -- GravityParticleEffect;
+    Game -- ThrusterParticleEffect;
+    Game -- ThrusterParticlesEffect;
 
 }

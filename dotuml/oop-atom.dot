@@ -1,56 +1,101 @@
 ClassDiagram {
-    class Game{
-        _players:list
-        _builders:list
-        _builder_index:int
-        _phase:str
-        _background:str
-        _collision_director:CollisionDirector
-        _gravity_director:GravityDirector
-        object:list
-        running:bool
-        
-        __init__(self, pygame_screen:pygame.Surface, time_between_frame:float, zero_vector:tuple, unit_size:int, background:str)
-        add_tracks(self)
-        reset(self)
-        draw_tracks(self)
-        alive(self)
-        run_build(self)
-        run_battle(self, collision_delay, COLLISION_DELAY_MAX)
-        run_end(self)
-        run(self)
-        add_players(self, player1:ControllableMechansim, player2:ControllableMechansim)
-        build_players(self)
-        get_player(self, index:int)
-        add_object(self, object)
-        remove_object(self, object)
-        get_phase(self)
-        set_phase(self, phase:str)
-        is_valid(self, instruction)
-        act(self, player: ControllableMechansim, action: str)
-        __draw_blocks(self, zero_vector: tuple, unit_size: int)
-        __build_key_events(self, key)
-        __battle_key_events(self)
-        __collision_events(self, collision_report)
-        change_normalized_into_real(zero_vector: tuple, unit_size: int, target_vector: tuple)
-    }
 
-    class GravityDirector{
-        __init__(self, mass:float, loc:tuple, time_between_frame:float)
-        add_gravity(self, player:BlockMechanism)
-        set_mass(self, mass:float)
-        get_mass(self)
-    }
-
-    class CollisionDirector{
-        detect_and_effect_collision(self,block_mechanism_1:BlockMechanism, block_mechanism_2:BlockMechanism, time_between_frame:float)
-        block_collide_data(self, block1:Block, block2:Block)
-        is_node_in_block(self, node:tuple, block:Block)
-        _normal_vector_for_impactor(self, impact_line, hit_line)
-        _array_to_tuple(self, arr)
-        _detect_crossover(self, line1:tuple, line2:tuple)
-        _cal_collision_impluse(self, momentum1:tuple, momentum2:tuple, angular_momentum1:float, angular_momentum2:float, mass1:float, mass2:float, normal_vector:np.ndarray, e:float)
-    }
-
+  class Sprite {
     
+  }
+  
+  class Level {
+    player
+    visible_sprites
+    obstacle_sprites
+    current_attack
+    attack_sprites
+    attackable_sprites
+    ui
+    upgrade
+    animation_player
+    magic_player
+    
+    __init__(self, file_name)
+    add_exp(self, amount)
+    get_exp(self)
+    get_health(self)
+    get_energy(self)
+    get_pos(self)
+    get_speed(self)
+    
+    create_map(self)
+    create_attack(self)
+    create_magic(self, style, strength, cost)
+    player_attack_logic(self)
+    damage_player(self, amount, attack_type)
+    trigger_death_particles(self, pos, particle_type)
+    destroy_attack(self)
+    toggle_menu(self)
+    run(self)
+  }
+ 
+  class Entity {
+    __init__()
+    move(self,speed)
+    collision(self,direction)
+    wave_value(self)
+  }
+
+  class Player {
+    health
+    energy
+    exp
+    speed
+		__init__()
+    get_status(self)
+    animate(self)
+    import_player_assets(self)
+    get_random_position(self)
+    input(self)
+    cooldowns(self)
+    energy_recovery(self)
+  }
+
+  class Enemy {
+    health
+    exp
+    speed
+    notice_radius
+    damage_player
+    
+    __init__()
+    get_status(self, player)
+    animate(self)
+		get_player_distance_direction(self, player)
+    actions(self, player)
+    get_damage(self, player, attack_type)
+    check_death(self)
+  }
+  
+  class Weapon {
+		__init__(self,player,groups)
+  }
+  
+  class MagicPlayer {
+    __init__(self,animation_player)
+    heal(self,player,strength,cost,groups)
+    teleport(self,player,strength,cost,groups)
+    flame(self,player,cost,groups)
+  }
+  
+  class AnimationPlayer {
+    __init__(self)
+  }
+
+  Entity -g-> Sprite
+  Weapon -g-> Sprite
+  Player -g-> Entity
+  Enemy -g-> Entity
+  Level "1" --> "0..*" Player;
+  Level "1" --> "0..*" MagicPlayer;
+  Level "1" --> "0..*" AnimationPlayer;
+  Level "1" --> "0..*" Enemy;
+  //Player "1" --> "0..*" Weapon;
+  //Player "1" --> "0..*" MagicPlayer;
 }
