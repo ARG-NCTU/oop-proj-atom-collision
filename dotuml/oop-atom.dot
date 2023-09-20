@@ -1,0 +1,14 @@
+ClassDiagram {
+    class Game{
+        _players:list
+        _builders:list
+        _builder_index:int
+        _phase:str
+        _background:str
+        _collision_director:CollisionDirector
+        _gravity_director:GravityDirector
+        object:list
+        running:bool
+        
+    }
+}
