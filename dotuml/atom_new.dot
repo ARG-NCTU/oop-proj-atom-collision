@@ -382,18 +382,36 @@ ClassDiagram{
 
 //==============================================================
     //g for inherit
-    //-- call function or data
-    Block -g-> SkinBone;
-    DefenseBlock -g-> Block;
-    WoodBlock -g-> DefenseBlock;
-    StoneBlock -g-> DefenseBlock;
-    CoreBlock -g-> DefenseBlock;
+    //i for include
+    //e for extend
+    //'' for inherit
+    //-- for  attribute system|actor|usecase|relation [...]
+
+    //synchronous message	lifeline1 -s-> lifeline2 "label" or lifeline1 --> lifeline2 "label"
+    //asynchronous message	lifeline1 -a-> lifeline2 "label"
+    //reply message	lifeline1 -r-> lifeline2 "label"
+    //create message	lifeline1 -c-> lifeline2 "label"
+    //delete message	lifeline1 -d-> lifeline2 "label"
+    //lost message	lifeline1 -l-> "label"
+    //find message	-f-> lifeline2 "label"
+
+
+
+
+    Block --> SkinBone;
+    DefenseBlock --> Block;
+    WoodBlock --> DefenseBlock;
+    StoneBlock --> DefenseBlock;
+    CoreBlock --> DefenseBlock;
 
     Block -c-> BlockAssembly;
-    BlockMechanism -g-> BlockAssembly;
-    ControllableMechansim -g-> BlockMechanism;
-    ControllableMechansimBuilder -g-> BlockMechanism;
+    BlockMechanism --> BlockAssembly;
+    ControllableMechansim --> BlockMechanism;
+    ControllableMechansimBuilder --> BlockMechanism;
 
+    CollisionDirector -- BlockMechanism;
+    CollisionDirector -- Block;
+    
     ControllableMechansim -r-> CollisionDirector;
     ControllableMechansim -r-> GravityDirector;
 
@@ -403,10 +421,10 @@ ClassDiagram{
     Game -- ThrusterParticleEffect;
     Game -- ThrusterParticlesEffect;
 //===============================================================
-    Sword -g-> Weapon;
-    Hammer -g-> Weapon;
-    Cannon -g-> Weapon;
-    Bullet -g-> Weapon;
+    Sword --> Weapon;
+    Hammer --> Weapon;
+    Cannon --> Weapon;
+    Bullet --> Weapon;
     MinimaxAgent -- GameState;
     Game -- Sounds;
     CoreBlock -- Color;
