@@ -1,101 +1,271 @@
-ClassDiagram {
+ClassDiagram{
 
-  class Sprite {
-    
-  }
-  
-  class Level {
-    player
-    visible_sprites
-    obstacle_sprites
-    current_attack
-    attack_sprites
-    attackable_sprites
-    ui
-    upgrade
-    animation_player
-    magic_player
-    
-    __init__(self, file_name)
-    add_exp(self, amount)
-    get_exp(self)
-    get_health(self)
-    get_energy(self)
-    get_pos(self)
-    get_speed(self)
-    
-    create_map(self)
-    create_attack(self)
-    create_magic(self, style, strength, cost)
-    player_attack_logic(self)
-    damage_player(self, amount, attack_type)
-    trigger_death_particles(self, pos, particle_type)
-    destroy_attack(self)
-    toggle_menu(self)
-    run(self)
-  }
- 
-  class Entity {
-    __init__()
-    move(self,speed)
-    collision(self,direction)
-    wave_value(self)
-  }
+    class Game {
+        _players: list
+        _builders: list
+        _builder_index: int
+        _objects: list
+        _phase: str
+        _background: str
+        _screen: pygame.Surface
+        _collision_director: CollisionDirector
+        _gravity_director: GravityDirector
+        _time_between_frame: float
+        _zero_vector: tuple
+        _unit_size: int
+        _origin_unit_size: int
+        _running: bool
+        _gravity_particle_effect: GravityParticleEffect
+        _origin_hp: list
+        _thruster_particle_effect: ThrusterParticlesEffect
+        _player_thruster_particle_effect: dict
+        _battle_time: int
+        _tracks: list
+        _track_length: int
+        _track_colors: tuple
+        _track_ratio: float
 
-  class Player {
-    health
-    energy
-    exp
-    speed
-		__init__()
-    get_status(self)
-    animate(self)
-    import_player_assets(self)
-    get_random_position(self)
-    input(self)
-    cooldowns(self)
-    energy_recovery(self)
-  }
+        __init__(pygame_screen: pygame.Surface, time_between_frame: float, zero_vector: tuple, unit_size: int, background: str): void
+        add_tracks(): void
+        reset(): void
+        draw_tracks(): void
+        alive(): tuple
+        run_build(): void
+        run_battle(collision_delay: int, COLLISION_DELAY_MAX: int): void
+        run_end(): void
+        run(): void
+        add_players(player1: ControllableMechansim, player2: ControllableMechansim): void
+        build_players(): void
+        get_player(index: int): ControllableMechansim
+        add_object(object): void
+        remove_object(object): void
+        get_phase(): str
+        set_phase(phase: str): void
+        is_valid(instruction): bool
+        act(player: ControllableMechansim, action: str): void
+        __draw_blocks(zero_vector: tuple, unit_size: int): void
+        __build_key_events(key): void
+        __battle_key_events(): void
+        __collision_events(collision_report): void
+    }
 
-  class Enemy {
-    health
-    exp
-    speed
-    notice_radius
-    damage_player
+    class ControllableMechansim {
+        __init__(core_block: CoreBlock, momentum: tuple): void
+        core_move_up(time_between_frame: float): void
+        core_move_down(time_between_frame: float): void
+        core_move_left(time_between_frame: float): void
+        core_move_right(time_between_frame: float): void
+        total_hp(): float
+    }
+
+    class CollisionDirector {
+        detect_and_effect_collision(block_mechanism_1: BlockMechanism, block_mechanism_2: BlockMechanism, time_between_frame: float)
+        block_collide_data(block1: Block, block2: Block): tuple
+        is_node_in_block(node: tuple, block: Block): bool
+        _normal_vector_for_impactor(impact_line, hit_line): np.ndarray
+        _array_to_tuple(arr)
+        _detect_crossover(line1: tuple, line2: tuple): bool
+        _cal_collision_impluse(momentum1: tuple, momentum2: tuple, angular_momentum1: float, angular_momentum2: float, mass1: float, mass2: float, normal_vector: np.ndarray, e: float): np.ndarray
+    }
+
+    class GravityParticleEffect {
+        set_color(color: tuple): void
+        set_width(width: int): void
+        render(screen: pygame.Surface, zero_vector: tuple, unit_size: int): void
+    }
+
+    class ControllableMechansimBuilder {
+        _cursor: tuple
+        _block_type: str
+        _total_coin: int
+        _total_cost: int
+        
+        __init__(): void
+        set_costs(): void
+        set_block_type(block_type: str): void
+        move_cursor(direction: str): void
+        add_block_dir(direction: str): void
+        delete_block(): void
+        build(): ControllableMechansim
+        render(screen, zero_vector: tuple, unit_size: int, center: tuple): void
+    }
+
+    class GravityDirector {
+        __mass: float
+        __loc: tuple
+        __time_between_frame: float
+        
+        __init__(mass: float, loc: tuple, time_between_frame: float): void
+        add_gravity(player: BlockMechanism): void
+        set_mass(mass: float): void
+        get_mass(): float
+    }
+
+    class SkinBone {
+        _previous_nodes: list
+        nodes: list
+        lines: list
+        nodes_max_length: int
+        __init__(nodes_max_length: int)
+        render(screen, color, debug_color): void
+        set_nodes(nodes: list, fill_nodes: bool): void
+        add_node(node: tuple): void
+        get_previous_nodes(): list
+        get_nodes(): list
+        get_lines(): list
+        fill_nodes(): void
+        is_crossover(): bool
+        _gen_lines(): void
+        _detect_crossover(line1: tuple, line2: tuple): bool
+    }
+
+    class Block {
+        _hp: int
+        _visible: bool
+        _block_size: float
+        _color: tuple
+        _mass: int
+        _coor: tuple
+        _rotation: float
+        _previous_coor: tuple
+        __init__(center_point: tuple, hp: int, color: tuple, mass: int, visible: bool)
+        get_hp(): int
+        set_hp(hp: int): void
+        damage_block(value: int): void
+        heal_block(value: int): void
+        get_previous_coor(): tuple
+        get_left_top(): tuple
+        get_block_size(): int
+        get_coor(): tuple
+        get_mass(): int
+        set_coor(coor: tuple): void
+        move(dir_vector: tuple): void
+        rotate(pivot_point: tuple, theta: float): void
+        render(screen, zero_vector: tuple, unit_size: int, is_debugging: bool, debug_color: tuple): void
+    }
+
+    class BlockAssembly {
+        _core: CoreBlock
+        _size: int
+        _oppo: BlockAssembly
+        _blocks: dict
+        _block_neighbor: dict
+        __init__(core_block: CoreBlock)
+        remove_block(block: DefenseBlock): void
+        is_valid(block: DefenseBlock, visited: dict): bool
+        render(screen, zero_vector: tuple, unit_size: int): void
+        add_block(block: DefenseBlock, core: bool)
+        set_oppo(player: BlockAssembly): void
+        get_blocks(): dict
+        get_block(coor: tuple): DefenseBlock
+        get_able(coor: tuple): bool
+        get_neighbors_block(block: DefenseBlock): list
+        get_neighbors(coor: tuple): list
+        add_blocks(coordinate_block: dict): void
+        build(): DefenseBlock
+        get_coor(): tuple
+        attack(arm_type): void
+    }
+
+    class BlockMechanism {
+        _momentum: tuple
+        _angular_momentum: float
+        _momentum_of_inertia: float
+        _mass: float
+        _center_of_mass_coor: tuple
+        __init__(core_block: CoreBlock, momentum: tuple)
+        render(screen, zero_vector: tuple, unit_size: int, is_debugging: bool, debug_color: tuple): void
+        add_force(force: tuple, location: tuple, time_between_frame: float): void
+        get_center_of_mass_coor(): tuple
+        get_mass(): float
+        get_momentum(): tuple
+        get_angular_momentum(): float
+        move_by_physics(time_between_frame: float): void
+        move_to(coor: tuple): void
+        __update_mass(): void
+        __update_center_of_mass_coor(): void
+        __update_momentum_of_inertia(): void
+        __update_properties(): void
+    }
+
+    class DefenseBlock {
+        _status: int
+        _max_hp: int
+        _init_color: tuple
+        _texture: str
+        _arm: Arm
+        _rotation: float
+        __init__(center_point: tuple, color: tuple, hp: int, mass: int, texture: str, arm: Arm, visible: bool, status: int): void
+        get_hp_ratio(): float
+        set_status(): void
+        get_status(): int
+        set_color(): void
+        damage_block(value: int): void
+        break_animation(): void
+        set_rotation(rotation: float): void
+        attack(opponent: object): void
+        get_arm(): Arm
+        set_arm(arm_type: str): void
+    }
+
+    class WoodBlock {
+        _max_hp: int
+        _mass: int
+        _init_color: tuple
+        __init__(center_point: tuple, arm: object, visible: bool, status: int)
+    }
+
+    class StoneBlock {
+        _max_hp: int
+        _mass: int
+        _init_color: tuple
+        __init__(center_point: tuple, arm: object, visible: bool, status: int)
+    }
+
+    class CoreBlock {
+        _max_hp: int
+        _mass: int
+        _int_color: tuple
+        __init__(center_point: tuple, visible: bool, status: int)
+    }
+
     
-    __init__()
-    get_status(self, player)
-    animate(self)
-		get_player_distance_direction(self, player)
-    actions(self, player)
-    get_damage(self, player, attack_type)
-    check_death(self)
-  }
-  
-  class Weapon {
-		__init__(self,player,groups)
-  }
-  
-  class MagicPlayer {
-    __init__(self,animation_player)
-    heal(self,player,strength,cost,groups)
-    teleport(self,player,strength,cost,groups)
-    flame(self,player,cost,groups)
-  }
-  
-  class AnimationPlayer {
-    __init__(self)
-  }
+    class ThrusterParticleEffect {
+        __particle_size: float
+        __emit_loc: tuple
+        __emit_velocity: tuple
+        __lifetime: int
+        __particle_loc: tuple
+        __init__(particle_size: float, emit_loc: tuple, emit_velocity: tuple, lifetime: int)
+        render(screen, zero_vector: tuple, unit_size: float): bool
+    }
 
-  Entity -g-> Sprite
-  Weapon -g-> Sprite
-  Player -g-> Entity
-  Enemy -g-> Entity
-  Level "1" --> "0..*" Player;
-  Level "1" --> "0..*" MagicPlayer;
-  Level "1" --> "0..*" AnimationPlayer;
-  Level "1" --> "0..*" Enemy;
-  //Player "1" --> "0..*" Weapon;
-  //Player "1" --> "0..*" MagicPlayer;
+    class ThrusterParticlesEffect {
+        __particles: list
+        __current_emit_delay: int
+        emit(emit_loc: tuple, emit_velocity: tuple, error_tolerance: float, particle_size: float, emit_delay: float, lifetime: int): void
+        render(screen, zero_vector, unit_size): void
+    }
+
+//==============================================================
+    Block -g-> SkinBone;
+    DefenseBlock -g-> Block;
+    WoodBlock -g-> DefenseBlock;
+    StoneBlock -g-> DefenseBlock;
+    CoreBlock -g-> DefenseBlock;
+
+    Block -c-> BlockAssembly;
+    BlockMechanism -g-> BlockAssembly;
+    ControllableMechansim -g-> BlockMechanism;
+    ControllableMechansimBuilder -r-> ControllableMechansim;
+
+    ControllableMechansim -r-> CollisionDirector;
+    ControllableMechansim -r-> GravityDirector;
+
+    CollisionDirector -a-> Game;
+    GravityDirector -a-> Game;
+    Game -- GravityParticleEffect;
+    Game -- ThrusterParticleEffect;
+    Game -- ThrusterParticlesEffect;
+
 }
