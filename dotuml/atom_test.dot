@@ -1,6 +1,10 @@
 ClassDiagram{
 //==============
     class Agent{
+        blocks: list
+        boost: bool
+        speed: None
+
         __init__(self, blocks: list)
         block_num(self)
         total_hp(self)
@@ -60,6 +64,7 @@ ClassDiagram{
         __update_momentum_of_inertia(self)
         __update_properties(self)
     }
+    
 //==========
         //from skin_bone import SkinBone
         //import pygame
@@ -81,6 +86,7 @@ ClassDiagram{
         rotate(self, pivot_point:tuple, theta:float)
         render(self, screen, zero_vector:tuple, unit_size:int, is_debugging: bool, debug_color: tuple)
     }
+    
 //===========
 // import BlockMechanism
 // import Block
@@ -168,18 +174,18 @@ ClassDiagram{
 //from particle_effect import GravityParticleEffect, ThrusterParticlesEffect
 //import pygame
 //import random
-    class Actions(){
+    class Actions{
         CORE_MOVE_UP
         CORE_MOVE_DOWN
         CORE_MOVE_LEFT 
         CORE_MOVE_RIGHT 
     }
-    class Timing(){
+    class Timing{
         PLAY_BGM_TIME 
         START_STRONG_FORCE_TIME 
         ENDLESS_FORCE_TIME 
     }
-    class KeyGroups(){
+    class KeyGroups{
         ThrusterKeys
     }
     class Game{
@@ -246,6 +252,7 @@ ClassDiagram{
         emit(self, emit_loc:tuple, emit_velocity:tuple, error_tolerance:float, particle_size:float, emit_delay:float, lifetime:int)
         render(self, screen, zero_vector, unit_size)
     }
+    
 //=============
     class SkinBone{
         __init__(self, nodes_max_length)
@@ -265,7 +272,7 @@ ClassDiagram{
         mixer.init()
     }
 //============
-    class weapons{
+    class Weapon{
         __init__(self, statistic: dict, rotation: float, credit: str)
         set_dir(self, rotation)
         get_stat(self): dict
@@ -304,4 +311,31 @@ ClassDiagram{
         hit(self, block)
         explode_animation(self)
     }
+//===============inherit========================
+    Sword -g-> Weapon;
+    Hammer -g-> Weapon;
+    Cannon -g-> Weapon;
+    Bullet -g-> Weapon;
+
+    WoodBlock -g-> DefenseBlock;
+    CoreBlock -g-> DefenseBlock;
+    StoneBlock -g-> DefenseBlock;
+
+    DefenseBlock -g-> Block;
+    Block -g-> SkinBone;
+
+    BlockMechanism -g-> BlockAssembly;
+    ControllableMechansimBuilder -g-> BlockMechanism;
+//==============================================
+//================declare==========================
+   
+
+//==============================================
+
+//==================call========================
+    GravityParticleEffect -- Color;
+    WoodBlock -- Color;
+    StoneBlock -- Color;
+    CoreBlock -- Color;
+//==============================================
 }
