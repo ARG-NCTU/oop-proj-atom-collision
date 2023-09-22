@@ -1,0 +1,435 @@
+ClassDiagram{
+
+    class Game {
+        _players: list
+        _builders: list
+        _builder_index: int
+        _objects: list
+        _phase: str
+        _background: str
+        _screen: pygame.Surface
+        _collision_director: CollisionDirector
+        _gravity_director: GravityDirector
+        _time_between_frame: float
+        _zero_vector: tuple
+        _unit_size: int
+        _origin_unit_size: int
+        _running: bool
+        _gravity_particle_effect: GravityParticleEffect
+        _origin_hp: list
+        _thruster_particle_effect: ThrusterParticlesEffect
+        _player_thruster_particle_effect: dict
+        _battle_time: int
+        _tracks: list
+        _track_length: int
+        _track_colors: tuple
+        _track_ratio: float
+
+        __init__(pygame_screen: pygame.Surface, time_between_frame: float, zero_vector: tuple, unit_size: int, background: str): void
+        add_tracks(): void
+        reset(): void
+        draw_tracks(): void
+        alive(): tuple
+        run_build(): void
+        run_battle(collision_delay: int, COLLISION_DELAY_MAX: int): void
+        run_end(): void
+        run(): void
+        add_players(player1: ControllableMechansim, player2: ControllableMechansim): void
+        build_players(): void
+        get_player(index: int): ControllableMechansim
+        add_object(object): void
+        remove_object(object): void
+        get_phase(): str
+        set_phase(phase: str): void
+        is_valid(instruction): bool
+        act(player: ControllableMechansim, action: str): void
+        __draw_blocks(zero_vector: tuple, unit_size: int): void
+        __build_key_events(key): void
+        __battle_key_events(): void
+        __collision_events(collision_report): void
+    }
+
+    class ControllableMechansim {
+        __init__(core_block: CoreBlock, momentum: tuple): void
+        core_move_up(time_between_frame: float): void
+        core_move_down(time_between_frame: float): void
+        core_move_left(time_between_frame: float): void
+        core_move_right(time_between_frame: float): void
+        total_hp(): float
+    }
+
+    class CollisionDirector {
+        detect_and_effect_collision(block_mechanism_1: BlockMechanism, block_mechanism_2: BlockMechanism, time_between_frame: float)
+        block_collide_data(block1: Block, block2: Block): tuple
+        is_node_in_block(node: tuple, block: Block): bool
+        _normal_vector_for_impactor(impact_line, hit_line): np.ndarray
+        _array_to_tuple(arr)
+        _detect_crossover(line1: tuple, line2: tuple): bool
+        _cal_collision_impluse(momentum1: tuple, momentum2: tuple, angular_momentum1: float, angular_momentum2: float, mass1: float, mass2: float, normal_vector: np.ndarray, e: float): np.ndarray
+    }
+
+    class GravityParticleEffect {
+        set_color(color: tuple): void
+        set_width(width: int): void
+        render(screen: pygame.Surface, zero_vector: tuple, unit_size: int): void
+    }
+
+    class ControllableMechansimBuilder {
+        _cursor: tuple
+        _block_type: str
+        _total_coin: int
+        _total_cost: int
+        
+        __init__(): void
+        set_costs(): void
+        set_block_type(block_type: str): void
+        move_cursor(direction: str): void
+        add_block_dir(direction: str): void
+        delete_block(): void
+        build(): ControllableMechansim
+        render(screen, zero_vector: tuple, unit_size: int, center: tuple): void
+    }
+
+    class GravityDirector {
+        __mass: float
+        __loc: tuple
+        __time_between_frame: float
+        
+        __init__(mass: float, loc: tuple, time_between_frame: float): void
+        add_gravity(player: BlockMechanism): void
+        set_mass(mass: float): void
+        get_mass(): float
+    }
+
+    class SkinBone {
+        _previous_nodes: list
+        nodes: list
+        lines: list
+        nodes_max_length: int
+        __init__(nodes_max_length: int)
+        render(screen, color, debug_color): void
+        set_nodes(nodes: list, fill_nodes: bool): void
+        add_node(node: tuple): void
+        get_previous_nodes(): list
+        get_nodes(): list
+        get_lines(): list
+        fill_nodes(): void
+        is_crossover(): bool
+        _gen_lines(): void
+        _detect_crossover(line1: tuple, line2: tuple): bool
+    }
+
+    class Block {
+        _hp: int
+        _visible: bool
+        _block_size: float
+        _color: tuple
+        _mass: int
+        _coor: tuple
+        _rotation: float
+        _previous_coor: tuple
+        __init__(center_point: tuple, hp: int, color: tuple, mass: int, visible: bool)
+        get_hp(): int
+        set_hp(hp: int): void
+        damage_block(value: int): void
+        heal_block(value: int): void
+        get_previous_coor(): tuple
+        get_left_top(): tuple
+        get_block_size(): int
+        get_coor(): tuple
+        get_mass(): int
+        set_coor(coor: tuple): void
+        move(dir_vector: tuple): void
+        rotate(pivot_point: tuple, theta: float): void
+        render(screen, zero_vector: tuple, unit_size: int, is_debugging: bool, debug_color: tuple): void
+    }
+
+    class BlockAssembly {
+        _core: CoreBlock
+        _size: int
+        _oppo: BlockAssembly
+        _blocks: dict
+        _block_neighbor: dict
+        __init__(core_block: CoreBlock)
+        remove_block(block: DefenseBlock): void
+        is_valid(block: DefenseBlock, visited: dict): bool
+        render(screen, zero_vector: tuple, unit_size: int): void
+        add_block(block: DefenseBlock, core: bool)
+        set_oppo(player: BlockAssembly): void
+        get_blocks(): dict
+        get_block(coor: tuple): DefenseBlock
+        get_able(coor: tuple): bool
+        get_neighbors_block(block: DefenseBlock): list
+        get_neighbors(coor: tuple): list
+        add_blocks(coordinate_block: dict): void
+        build(): DefenseBlock
+        get_coor(): tuple
+        attack(arm_type): void
+    }
+
+    class BlockMechanism {
+        _momentum: tuple
+        _angular_momentum: float
+        _momentum_of_inertia: float
+        _mass: float
+        _center_of_mass_coor: tuple
+        __init__(core_block: CoreBlock, momentum: tuple)
+        render(screen, zero_vector: tuple, unit_size: int, is_debugging: bool, debug_color: tuple): void
+        add_force(force: tuple, location: tuple, time_between_frame: float): void
+        get_center_of_mass_coor(): tuple
+        get_mass(): float
+        get_momentum(): tuple
+        get_angular_momentum(): float
+        move_by_physics(time_between_frame: float): void
+        move_to(coor: tuple): void
+        __update_mass(): void
+        __update_center_of_mass_coor(): void
+        __update_momentum_of_inertia(): void
+        __update_properties(): void
+    }
+
+    class DefenseBlock {
+        _status: int
+        _max_hp: int
+        _init_color: tuple
+        _texture: str
+        _arm: Arm
+        _rotation: float
+        __init__(center_point: tuple, color: tuple, hp: int, mass: int, texture: str, arm: Arm, visible: bool, status: int): void
+        get_hp_ratio(): float
+        set_status(): void
+        get_status(): int
+        set_color(): void
+        damage_block(value: int): void
+        break_animation(): void
+        set_rotation(rotation: float): void
+        attack(opponent: object): void
+        get_arm(): Arm
+        set_arm(arm_type: str): void
+    }
+
+    class WoodBlock {
+        _max_hp: int
+        _mass: int
+        _init_color: tuple
+        __init__(center_point: tuple, arm: object, visible: bool, status: int)
+    }
+
+    class StoneBlock {
+        _max_hp: int
+        _mass: int
+        _init_color: tuple
+        __init__(center_point: tuple, arm: object, visible: bool, status: int)
+    }
+
+    class CoreBlock {
+        _max_hp: int
+        _mass: int
+        _int_color: tuple
+        __init__(center_point: tuple, visible: bool, status: int)
+    }
+
+    
+    class ThrusterParticleEffect {
+        __particle_size: float
+        __emit_loc: tuple
+        __emit_velocity: tuple
+        __lifetime: int
+        __particle_loc: tuple
+        __init__(particle_size: float, emit_loc: tuple, emit_velocity: tuple, lifetime: int)
+        render(screen, zero_vector: tuple, unit_size: float): bool
+    }
+
+    class ThrusterParticlesEffect {
+        __particles: list
+        __current_emit_delay: int
+        emit(emit_loc: tuple, emit_velocity: tuple, error_tolerance: float, particle_size: float, emit_delay: float, lifetime: int): void
+        render(screen, zero_vector, unit_size): void
+    }
+//=======================================================================================
+    // nouse
+    class Agent { 
+        blocks: list
+        boost: bool
+        speed: None
+        __init__(blocks: list)
+        block_num(): int
+        total_hp(): float
+        core_hp(): float
+        alive(): bool
+        damaged(damage: list)
+        move_x(right: bool)
+        move_y(down: bool)
+        attack(arm_type: str)
+    }
+
+    class MinimaxAgent {
+        _index: int
+        _depth: str
+        _oppo: int
+        __init__(index: int, depth: str)
+        eval(gameState: GameState): float
+        get_legal_action()
+        getAction(gameState: GameState)
+    }
+
+    class Color {
+        CORE_COLOR: tuple
+        STONE_COLOR: tuple
+        DEBUGGING_COLOR: tuple
+        BLOCK_COOR_COLOR: tuple
+        MID_SCREEN_COLOR: tuple
+        CENTER_OF_MASS_COLOR: tuple
+        GRAVITY_PARTICLE_COLOR: tuple
+        THRUSTER_PARTICLE_COLOR: tuple
+        STRONGER_FORCE_FIELD_COLOR: tuple
+        ENDLESS_FORCE_FIELD_COLOR: tuple
+    }
+
+    class GameState { //check
+        agents: list
+        x_upper_bound: int
+        x_lower_bound: int
+        y_upper_bound: int
+        y_lower_bound: int
+        getLegalActions(agentIndex: int): list
+        getNextState(gameState: GameState, action: tuple): GameState
+        getNumAgents(): int
+        addAgents(agent): void
+        isEnd(): bool
+    }
+
+    class Sounds {
+        initializeMixer(): void
+    }
+
+    class Weapon { //check
+        _statistic: dict
+        _available: bool
+        _credit: str
+        _dir_melee: str
+        _dir_ranged: tuple
+
+        set_dir(rotation: float): void
+        get_stat(): dict
+        buff_stat(stat_to_buff: dict): void
+        change_stat(stat_to_change: dict): void
+        attack(): void
+        cool_down(): void
+        find_hit(player, area: pygame.Rect): Block
+        hit(block: Block): void
+        attack_animation(): void
+        render(screen): void
+    }
+
+    class Sword {
+        _statistic: dict
+        _available: bool
+        _credit: str
+        _dir_melee: str
+        _dir_ranged: tuple
+
+        Sword(statistic: dict, rotation: float)
+        get_attack_area(pos: tuple): pygame.Rect
+        attack(opponent, pos: tuple): void
+        attack_animation(): void
+    }
+
+
+    class Hammer {
+        _statistic: dict
+        _available: bool
+        _credit: str
+        _dir_melee: str
+        _dir_ranged: tuple
+
+        Hammer(statistic: dict, rotation: float)
+        get_attack_area(pos: tuple): list
+        attack(opponent, pos: tuple): void
+        attack_animation(): void
+    }
+
+    class Cannon {
+        _statistic: dict
+        _available: bool
+        _credit: str
+        _dir_melee: str
+        _dir_ranged: tuple
+
+        Cannon(statistic: dict, rotation: float)
+        attack(opponent, pos: tuple): void
+        attack_animation(): void
+    }
+
+    class Bullet {
+        _damage: float
+        _pos: list
+        _velocity: float
+        _dir: tuple
+        _radius: float
+        _opponent
+        _credit: str
+
+        Bullet(damage: float, pos: tuple, velocity: float, dir: tuple, radius: float, opponent, credit: str)
+        move(): void
+        get_attack_area(): tuple
+        intersects(rect: pygame.rect, center: tuple, r: float): bool
+        find_hit(player, area: tuple)
+        hit(block): void
+        explode_animation(): void
+    }
+
+
+//==============================================================
+    //g for inherit
+    //i for include
+    //e for extend
+    //'' for inherit
+    //-- for  attribute system|actor|usecase|relation [...]
+
+    //synchronous message	lifeline1 -s-> lifeline2 "label" or lifeline1 --> lifeline2 "label"
+    //asynchronous message	lifeline1 -a-> lifeline2 "label"
+    //reply message	lifeline1 -r-> lifeline2 "label"
+    //create message	lifeline1 -c-> lifeline2 "label"
+    //delete message	lifeline1 -d-> lifeline2 "label"
+    //lost message	lifeline1 -l-> "label"
+    //find message	-f-> lifeline2 "label"
+
+
+
+
+    Block --> SkinBone;
+    DefenseBlock --> Block;
+    WoodBlock --> DefenseBlock;
+    StoneBlock --> DefenseBlock;
+    CoreBlock --> DefenseBlock;
+
+    Block -c-> BlockAssembly;
+    BlockMechanism --> BlockAssembly;
+    ControllableMechansim --> BlockMechanism;
+    ControllableMechansimBuilder --> BlockMechanism;
+
+    CollisionDirector -- BlockMechanism;
+    CollisionDirector -- Block;
+    
+    ControllableMechansim -r-> CollisionDirector;
+    ControllableMechansim -r-> GravityDirector;
+
+    CollisionDirector -a-> Game;
+    GravityDirector -a-> Game;
+    Game -- GravityParticleEffect;
+    Game -- ThrusterParticleEffect;
+    Game -- ThrusterParticlesEffect;
+//===============================================================
+    Sword --> Weapon;
+    Hammer --> Weapon;
+    Cannon --> Weapon;
+    Bullet --> Weapon;
+    MinimaxAgent -- GameState;
+    Game -- Sounds;
+    CoreBlock -- Color;
+    GravityParticleEffect -- Color;
+    ThrusterParticleEffect -- Color;
+    Game -- Color;
+    
+}
