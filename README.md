@@ -1,8 +1,8 @@
-name  # oop-proj-atom-collision 
+# oop-proj-atom-collision 
 
 <img src="./oop_project_demo.gif"/>
 
-# For Ubuntu only
+# For Ubuntu 
 OOP class example game
 ## How to clone
 We have installed the dependencies in the oop-proj-atom-collision docker. 
@@ -17,7 +17,7 @@ $ cd oop-proj-atom-collision
 $ source docker_run.sh
 ```
 ## How to play
-When you're inside the docker just run the following command.
+When you're inside the docker, please run the following commands.
 ```
 $ python3 main.py
 ```
